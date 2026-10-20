@@ -43,8 +43,8 @@ const { config = null, example = '' } = Astro.props;
         class="mt-2 block h-56 w-full resize-y rounded-xl border border-edge bg-paper p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-64"></textarea>
     </div>
 
-    <details id="opts" open class="order-3 lg:col-start-1 lg:row-start-2">
-      <summary class="flex min-h-11 cursor-pointer items-center text-sm font-semibold lg:hidden">Options</summary>
+    <details id="opts" open class="group/opts order-3 lg:col-start-1 lg:row-start-2">
+      <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-xl border border-edge bg-paper px-3 text-sm font-semibold lg:hidden [&::-webkit-details-marker]:hidden">Options <svg class="h-4 w-4 shrink-0 text-muted transition-transform group-open/opts:rotate-180" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
       <h2 class="sr-only">Options</h2>
       <div class="grid grid-cols-2 gap-x-3 gap-y-1">
         <div>
@@ -304,7 +304,7 @@ const { config = null, example = '' } = Astro.props;
     if (delim.value === 'custom' && !custom.value) notes.push('Type your custom separator. A comma is used until then.');
     if (s.multiColumn) notes.push('This looks like several columns. Tick "Use only the first column" in Options, or paste one column at a time.');
     if (s.tabsSplit) notes.push(`${plural(s.tabsSplit, 'row')} had more than one column. Only the first column is used.`);
-    if (s.delimiterInItems) notes.push(`${plural(s.delimiterInItems, 'value')} contain the separator. Add quotes, or pick another separator.`);
+    if (s.delimiterInItems) notes.push(`${plural(s.delimiterInItems, 'value')} ${s.delimiterInItems === 1 ? 'contains' : 'contain'} the separator. Add quotes, or pick another separator.`);
     stats.textContent = notes.join('\n');
   }
   function schedule() {
