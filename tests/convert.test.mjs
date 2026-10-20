@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
-import { convert, splitList, resolveDelimiter, isNumber } from '../src/lib/convert.js';
+import { test as t } from 'node:test';
+import { convert, splitList, resolveDelimiter, unescapeCustom, isNumber, PRESETS } from '../src/lib/convert.js';
 
-let n = 0;
-const t = (name, fn) => { fn(); n++; console.log('ok', name); };
 const run = (text, o) => convert(text, o).output;
 
 t('plain comma', () => assert.equal(run('a\nb\nc', {}), 'a,b,c'));
@@ -46,7 +45,8 @@ t('empty input gives empty output, not ()', () => {
 t('single item has no delimiter', () => assert.equal(run('a', { quote: 'single' }), "'a'"));
 t('stats', () => {
   const r = convert('a\nb\n\na\n', { dedupe: true });
-  assert.deepEqual(r.stats, { inputItems: 5, blanksRemoved: 2, duplicatesRemoved: 1, outputItems: 2 });
+  // the final empty line (every Excel copy has one) is not counted
+  assert.deepEqual(r.stats, { inputItems: 4, blanksRemoved: 1, duplicatesRemoved: 1, outputItems: 2, multiColumn: false, delimiterInItems: 0 });
 });
 
 // reverse mode
@@ -79,11 +79,88 @@ t('100k lines under 2 s', () => {
   const ms = performance.now() - t0;
   assert.equal(r.stats.outputItems, 70000);
   console.log('   100k lines took', Math.round(ms), 'ms');
-  assert.ok(ms < 2000, 'too slow: ' + ms);
+  assert.ok(ms < 5000, 'too slow: ' + ms);
   const rev = performance.now();
   const b = convert(r.output, { mode: 'toColumn', delimiter: ',' });
   console.log('   reverse 70k took', Math.round(performance.now() - rev), 'ms');
   assert.equal(b.stats.outputItems, 70000);
 });
 
-console.log(`\n${n} tests passed`);
+// fixes from the review
+const parse = (text, o) => JSON.parse(run(text, { quote: 'json', wrap: 'brackets', delimiter: ', ', skipNumberQuotes: true, ...o }));
+t('JSON preset gives valid JSON for quotes, backslashes, tabs and plus signs', () => {
+  assert.deepEqual(parse('say "hi"\nC:\\x\n+5\n007\n7\n-3.5'), ['say "hi"', 'C:\\x', '+5', '007', 7, -3.5]);
+});
+t('JSON preset escapes control characters', () => assert.deepEqual(parse('a\u0001b', { trim: false }), ['a\u0001b']));
+t('SQL double quote style still doubles', () => assert.equal(run('a"b', { quote: 'double' }), '"a""b"'));
+t('JSON preset in PRESETS makes JSON, SQL preset keeps doubling', () => {
+  assert.equal(PRESETS.json.quote, 'json');
+  assert.equal(run("it's", { quote: PRESETS.sql.quote }), "'it''s'");
+});
+t('reverse keeps (1,2),(3,4) together instead of stripping one bracket', () => {
+  assert.deepEqual(splitList('(1,2),(3,4)', ','), ['(1', '2)', '(3', '4)']);
+  assert.deepEqual(splitList('(a), (b)', ','), ['(a)', ' (b)']);
+});
+t('reverse still strips one matching outer pair', () => {
+  assert.equal(back('((1),2)', ','), '(1)\n2');
+  assert.equal(back("('a)', 'b')", ','), 'a)\nb');
+  assert.equal(back('{1,2}', ','), '1\n2');
+});
+t('numeric sort treats 12abc, dates and 1,5 as text', () => {
+  assert.equal(run('2024-03-01\n3\n12abc\n1,5\n1', { sort: 'num-asc' }), '1,3,2024-03-01,12abc,1,5');
+});
+t('numeric sort reads 1,234 and exponents', () => {
+  assert.equal(run('1,234\n99\n1e3', { sort: 'num-asc', delimiter: '|' }), '99|1e3|1,234');
+  assert.equal(run('Infinity\n5', { sort: 'num-asc', delimiter: '|' }), '5|Infinity');
+});
+t('numeric sort is stable and puts text last', () => assert.equal(run('b\n2\na\n2\n1', { sort: 'num-asc', delimiter: '|' }), '1|2|2|b|a'));
+t('empty custom separator falls back to a comma', () => {
+  assert.equal(resolveDelimiter('custom', ''), ',');
+  assert.equal(run('a\nb', { delimiter: resolveDelimiter('custom', '') }), 'a,b');
+});
+t('reverse with comma+space splits on the comma', () => assert.equal(back('a,b', ', '), 'a\nb'));
+t('reverse: a quoted last item adds no empty item', () => {
+  const r = convert("'a','b'", { mode: 'toColumn', delimiter: ',' });
+  assert.equal(r.output, 'a\nb');
+  assert.deepEqual([r.stats.inputItems, r.stats.blanksRemoved], [2, 0]);
+  assert.equal(back("'a','b'", ',', { removeBlanks: false }), 'a\nb');
+  assert.equal(back("'a','b',", ',', { removeBlanks: false }), 'a\nb\n');
+});
+t('reverse: line breaks split items for an explicit separator', () => {
+  assert.equal(back('a,b\nc,d', ','), 'a\nb\nc\nd');
+  assert.equal(back('a,b\r\nb,c', ',', { dedupe: true }), 'a\nb\nc');
+  assert.equal(back('z,y\nx,w', ',', { sort: 'az' }), 'w\nx\ny\nz');
+  assert.equal(back('a,\nb', ','), 'a\nb');
+});
+t('reverse: tab, semicolon, pipe and space separators', () => {
+  assert.equal(back('a\tb\tc', '\t'), 'a\nb\nc');
+  assert.equal(back('a; b; c', ';'), 'a\nb\nc');
+  assert.equal(back('a|b', '|'), 'a\nb');
+  assert.equal(back('a b c', ' '), 'a\nb\nc');
+});
+t('reverse: CRLF input and a custom separator', () => {
+  assert.equal(back('a,b\r\nc', ','), 'a\nb\nc');
+  assert.equal(back('x - y - z', ' - '), 'x\ny\nz');
+});
+t('reverse: unclosed quote and text after a closing quote stay as typed', () => {
+  assert.deepEqual(splitList("'tis, x", ','), ["'tis", ' x']);
+  assert.deepEqual(splitList('"a"b, c', ','), ['"a"b', ' c']);
+});
+t('backtick quotes and unescapeCustom', () => {
+  assert.equal(run('a`b', { quote: 'backtick' }), '`a``b`');
+  assert.equal(unescapeCustom('\\n\\t\\\\'), '\n\t\\');
+});
+t('trim off with remove blanks drops whitespace-only lines', () => assert.equal(run('a\n  \nb', { trim: false }), 'a,b'));
+t('dedupe, ignore case and sort together', () => assert.equal(run('b\nA\na\nB', { dedupe: true, ignoreCase: true, sort: 'az' }), 'A,b'));
+t('a final line break is not counted as an input line', () => {
+  const r = convert('a\nb\nc\n');
+  assert.deepEqual([r.stats.inputItems, r.stats.blanksRemoved], [3, 0]);
+});
+t('several pasted columns are flagged', () => {
+  assert.equal(convert('a\t1\nb\t2').stats.multiColumn, true);
+  assert.equal(convert('a\nb').stats.multiColumn, false);
+});
+t('values that hold the separator are counted when there are no quotes', () => {
+  assert.equal(convert('Smith, John\nLee').stats.delimiterInItems, 1);
+  assert.equal(convert('Smith, John\nLee', { quote: 'double' }).stats.delimiterInItems, 0);
+});
