@@ -1,11 +1,12 @@
 ---
 import site from '../site.config.ts';
+import { withBase } from '../lib/url.ts';
 const year = new Date().getFullYear();
 const links = [
-  { href: '/about/', label: 'About' },
-  { href: '/contact/', label: 'Contact' },
-  { href: '/privacy/', label: 'Privacy Policy' },
-  { href: '/terms/', label: 'Terms' },
+  { href: withBase('/about/'), label: 'About' },
+  { href: withBase('/contact/'), label: 'Contact' },
+  { href: withBase('/privacy/'), label: 'Privacy Policy' },
+  { href: withBase('/terms/'), label: 'Terms' },
 ];
 ---
 <footer class="mt-24 border-t border-line">

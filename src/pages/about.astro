@@ -1,6 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import site from '../site.config.ts';
+import { withBase } from '../lib/url.ts';
 ---
 <Page title="About" description={`About ${site.name}, a free online tool that turns a column into a comma separated list.`}>
   <p>{site.name} turns a pasted column into a delimited list. People use it to build SQL IN lists, tidy values from Excel or Google Sheets, and move data between tools. It also works in reverse, from a list back to a column.</p>
@@ -9,5 +10,5 @@ import site from '../site.config.ts';
   <h2>How it works</h2>
   <p>The conversion runs in your browser. Your text is not uploaded and we do not ask you to create an account. You can add quotes, remove duplicates, sort, trim spaces and choose the separator.</p>
   <h2>Contact</h2>
-  <p>Found a bug or want a feature? Write to <a href={`mailto:${site.email}`}>{site.email}</a> or visit the <a href="/contact/">Contact page</a>.</p>
+  <p>Found a bug or want a feature? Write to <a href={`mailto:${site.email}`}>{site.email}</a> or visit the <a href={withBase('/contact/')}>Contact page</a>.</p>
 </Page>
