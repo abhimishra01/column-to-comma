@@ -67,3 +67,18 @@ GitHub Pages: `base` from `PAGES_BASE`, `site` from `PAGES_SITE`; every link, ic
 18. /python-list-from-column/
 19. /email-list-for-bcc/
 20. /keep-leading-zeros-in-list/
+
+## Gap fix (2026-10-20)
+Done:
+- Status line under the output: "5 items from 7 lines. 1 blank removed, 0 duplicates removed." (must 1).
+- Options saved in the browser (already there); now shows "Settings saved on this device." once, ever (must 2).
+- 10 pre-rendered landing pages from `src/data/pages.js`, one template `src/pages/[slug].astro`, each with its own title, H1, intro, preset settings, a worked example converted at build time, 3 sections, 3 FAQs and FAQ schema. Linked from the home page ("Popular conversions") and from each other: sql-in-list-generator, list-to-column, excel-column-to-comma-separated-list, google-sheets-column-to-comma, add-single-quotes-to-list, remove-duplicates-from-list, newline-to-comma, json-array-from-column, sort-list-alphabetically, column-to-html-list (must 3).
+- Phone: Copy sits in a sticky bottom bar; the inline Copy hides below 1024px; page gets bottom room (must 4). Also fixed the Paste/Upload/Example/Clear row that overflowed at 390px.
+- Upload .txt/.csv and Download .txt (should 5).
+- "Use only the first column" for Excel paste with tabs, with a note when rows were cut (should 6).
+- Before/after each item and before/after the list (should 7). Letter case: upper, lower, Title Case (should 8).
+- Tests: 71 pass (new: case, affixes, first column, presets, landing page data and expected examples). Lighthouse (Chrome) 100/100/100/100 on home and a landing page, mobile and desktop.
+Skipped:
+- 9 wrap at N characters, 10 share link with options, 11 copy-from-Excel animation: nice-to-have, not single-purpose core; share link also clashes with the preset pages.
+- Landing pages 11 to 20 of the Phase 2 list: capped at 10 by the brief.
+Note: title length is capped at 44 characters in a test so "Title | Column to Comma" stays under 60.

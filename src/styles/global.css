@@ -62,3 +62,7 @@ body { background: var(--paper); color: var(--ink); font-family: var(--font-sans
 .prose-site li { margin-bottom: 0.35rem; }
 .prose-site a { color: var(--brand-ink); text-decoration: underline; text-underline-offset: 3px; }
 .prose-site strong { font-weight: 650; }
+
+/* Phone: the sticky Copy bar is on screen, so the page needs room below the footer. */
+body.has-bar { padding-bottom: 4.75rem; }
+@media (min-width: 1024px) { body.has-bar { padding-bottom: 0; } }

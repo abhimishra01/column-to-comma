@@ -49,6 +49,29 @@ function sortNumber(v) {
   return SORT_NUMBER.test(t) ? parseFloat(t) : null;
 }
 
+// Every setting the page can hold, with its default. The page saves, restores and resets from this table,
+// and each landing page lists only the settings that differ.
+export const DEFAULT_CONFIG = {
+  mode: 'toList', delim: 'comma', custom: '', quote: 'none', wrap: 'none', sort: 'none', caps: 'none',
+  trim: true, blanks: true, dedupe: false, icase: false, nums: false, firstCol: false,
+  itemPrefix: '', itemSuffix: '', listPrefix: '', listSuffix: '',
+};
+
+// Turn a settings object (page controls or a landing page preset) into convert() options.
+export function optsFromConfig(config = {}) {
+  const c = { ...DEFAULT_CONFIG, ...config };
+  const d = resolveDelimiter(c.delim, c.custom);
+  return {
+    mode: c.mode,
+    delimiter: c.mode === 'toColumn' ? d : (d ?? ','),
+    quote: c.quote, skipNumberQuotes: c.nums,
+    trim: c.trim, removeBlanks: c.blanks, dedupe: c.dedupe, ignoreCase: c.icase,
+    sort: c.sort, wrap: c.wrap, caps: c.caps, firstColumn: c.firstCol,
+    itemPrefix: unescapeCustom(c.itemPrefix), itemSuffix: unescapeCustom(c.itemSuffix),
+    listPrefix: unescapeCustom(c.listPrefix), listSuffix: unescapeCustom(c.listSuffix),
+  };
+}
+
 const jsonEscape = (s) =>
   s.replace(/[\\"\u0000-\u001f]/g, (c) =>
     ({ '\\': '\\\\', '"': '\\"', '\n': '\\n', '\r': '\\r', '\t': '\\t' }[c] ?? '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')));
@@ -146,6 +169,10 @@ export function splitList(text, delim) {
   return items;
 }
 
+// Title case capitalizes the first letter of each word and lowercases the rest. Apostrophes stay inside a word.
+const titleCase = (s) => s.toLowerCase().replace(/(^|[\s\-(/])(\p{L})/gu, (_, a, b) => a + b.toUpperCase());
+const CASES = { upper: (s) => s.toUpperCase(), lower: (s) => s.toLowerCase(), title: titleCase };
+
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 function sortItems(items, how) {
@@ -175,6 +202,10 @@ function sortItems(items, how) {
  *   trim, removeBlanks, dedupe, ignoreCase  booleans
  *   sort            none | az | za | num-asc | num-desc
  *   wrap            none | parens | brackets | braces
+ *   caps            none | upper | lower | title (applied before duplicates are checked)
+ *   firstColumn     take only the text before the first tab on each line (Excel paste)
+ *   itemPrefix, itemSuffix   text added around every item, outside the quotes
+ *   listPrefix, listSuffix   text added around the whole list, outside the wrap
  * Returns { output, stats }. stats: inputItems, blanksRemoved, duplicatesRemoved, outputItems,
  *   multiColumn (most lines hold a tab: several columns were pasted),
  *   delimiterInItems (items that contain the separator but have no quotes around them).
@@ -183,9 +214,10 @@ export function convert(text, opts = {}) {
   const o = {
     mode: 'toList', delimiter: ',', quote: 'none', skipNumberQuotes: false,
     trim: true, removeBlanks: true, dedupe: false, ignoreCase: false, sort: 'none', wrap: 'none',
+    caps: 'none', firstColumn: false, itemPrefix: '', itemSuffix: '', listPrefix: '', listSuffix: '',
     ...opts,
   };
-  const stats = { inputItems: 0, blanksRemoved: 0, duplicatesRemoved: 0, outputItems: 0, multiColumn: false, delimiterInItems: 0 };
+  const stats = { inputItems: 0, blanksRemoved: 0, duplicatesRemoved: 0, outputItems: 0, multiColumn: false, delimiterInItems: 0, tabsSplit: 0 };
   if (!text) return { output: '', stats };
 
   // In reverse mode ", " splits like ",": trimming removes the space.
@@ -197,8 +229,18 @@ export function convert(text, opts = {}) {
   if (o.mode === 'toList') {
     const filled = items.filter((s) => s.trim() !== '');
     stats.multiColumn = filled.length > 1 && filled.filter((s) => s.includes('\t')).length > filled.length / 2;
+    if (o.firstColumn) {
+      stats.multiColumn = false;
+      items = items.map((s) => {
+        const at = s.indexOf('\t');
+        if (at < 0) return s;
+        stats.tabsSplit++;
+        return s.slice(0, at);
+      });
+    }
   }
 
+  if (CASES[o.caps]) items = items.map(CASES[o.caps]);
   if (o.trim) {
     for (let i = 0; i < items.length; i++) items[i] = items[i].trim();
   }
@@ -233,6 +275,7 @@ export function convert(text, opts = {}) {
     const escape = isJson ? jsonEscape : (s) => s.replaceAll(q, q + q);
     items = items.map((s) => (o.skipNumberQuotes && bare(s) ? s : q + escape(s) + q));
   }
+  if (o.itemPrefix || o.itemSuffix) items = items.map((s) => o.itemPrefix + s + o.itemSuffix);
   const [open, close] = WRAPS[o.wrap] ?? WRAPS.none;
-  return { output: open + items.join(delim) + close, stats };
+  return { output: o.listPrefix + open + items.join(delim) + close + o.listSuffix, stats };
 }

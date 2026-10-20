@@ -8,4 +8,6 @@ export const faq = [
   { q: 'Is there a limit on how many rows I can paste?', a: 'There is no set limit. A list of 100,000 rows converts in well under a second on a normal laptop. Very large pastes depend on your device and browser memory.' },
   { q: 'Is my data uploaded or saved?', a: 'No. The conversion runs in your browser. Your text is never sent to a server. Only your option choices, such as the separator, are saved on your own device.' },
   { q: 'Can I use a separator other than a comma?', a: 'Yes. Pick semicolon, pipe, new line, tab or space, or choose Custom and type your own, such as " - ". Use \\t for a tab and \\n for a new line.' },
+  { q: 'Can I upload a file or download the result?', a: 'Yes. Press Upload file to load a .txt or .csv file, and Download .txt to save the result. The file is read in your browser and is not sent anywhere.' },
+  { q: 'Can I paste several columns from Excel?', a: 'Yes. Tick Use only the first column in Options. The tool then keeps the text before the first tab on each row and ignores the rest.' },
 ];

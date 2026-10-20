@@ -46,7 +46,7 @@ t('single item has no delimiter', () => assert.equal(run('a', { quote: 'single' 
 t('stats', () => {
   const r = convert('a\nb\n\na\n', { dedupe: true });
   // the final empty line (every Excel copy has one) is not counted
-  assert.deepEqual(r.stats, { inputItems: 4, blanksRemoved: 1, duplicatesRemoved: 1, outputItems: 2, multiColumn: false, delimiterInItems: 0 });
+  assert.deepEqual(r.stats, { inputItems: 4, blanksRemoved: 1, duplicatesRemoved: 1, outputItems: 2, multiColumn: false, delimiterInItems: 0, tabsSplit: 0 });
 });
 
 // reverse mode
@@ -163,4 +163,62 @@ t('several pasted columns are flagged', () => {
 t('values that hold the separator are counted when there are no quotes', () => {
   assert.equal(convert('Smith, John\nLee').stats.delimiterInItems, 1);
   assert.equal(convert('Smith, John\nLee', { quote: 'double' }).stats.delimiterInItems, 0);
+});
+
+// ---- gap fix: letter case, prefix and suffix, first column, presets, landing pages ----
+import { optsFromConfig, DEFAULT_CONFIG } from '../src/lib/convert.js';
+import { pages } from '../src/data/pages.js';
+
+t('letter case', () => {
+  assert.equal(run('Ab\ncD', { caps: 'upper' }), 'AB,CD');
+  assert.equal(run('Ab\ncD', { caps: 'lower' }), 'ab,cd');
+  assert.equal(run("john o'brien\nMARY-ann", { caps: 'title' }), "John O'brien,Mary-Ann");
+});
+t('letter case applies before duplicate check', () => assert.equal(run('a\nA', { caps: 'lower', dedupe: true }), 'a'));
+t('item and list prefix and suffix sit outside quotes and wrap', () => {
+  assert.equal(run('a\nb', { quote: 'single', wrap: 'parens', delimiter: ', ', itemPrefix: '<', itemSuffix: '>', listPrefix: 'IN ', listSuffix: ';' }), "IN ('a'>, <'b'>);".replace("('a'>", "(<'a'>"));
+});
+t('prefix and suffix make an html list', () => {
+  const o = optsFromConfig({ delim: 'newline', itemPrefix: '  <li>', itemSuffix: '</li>', listPrefix: '<ul>\\n', listSuffix: '\\n</ul>' });
+  assert.equal(run('x\ny', o), '<ul>\n  <li>x</li>\n  <li>y</li>\n</ul>');
+});
+t('first column only splits Excel rows on the first tab', () => {
+  const r = convert('Smith\t42\nJones\t17\n\nLee', { firstColumn: true });
+  assert.equal(r.output, 'Smith,Jones,Lee');
+  assert.equal(r.stats.tabsSplit, 2);
+  assert.equal(r.stats.multiColumn, false);
+});
+t('several columns without the option are flagged', () => assert.equal(convert('a\t1\nb\t2', {}).stats.multiColumn, true));
+t('optsFromConfig defaults give the plain comma list', () => {
+  assert.equal(run('a\nb', optsFromConfig({})), 'a,b');
+  assert.equal(DEFAULT_CONFIG.mode, 'toList');
+});
+t('optsFromConfig list to column uses auto-detect', () => assert.equal(run("'a', 'b'", optsFromConfig({ mode: 'toColumn', delim: 'auto' })), 'a\nb'));
+
+t('landing pages: unique, complete, within SEO limits', () => {
+  assert.equal(pages.length, 10);
+  const slugs = new Set(pages.map((p) => p.slug));
+  const h1s = new Set(pages.map((p) => p.h1));
+  const titles = new Set(pages.map((p) => p.title));
+  assert.equal(slugs.size, pages.length);
+  assert.equal(h1s.size, pages.length);
+  assert.equal(titles.size, pages.length);
+  for (const p of pages) {
+    assert.match(p.slug, /^[a-z0-9-]+$/);
+    assert.ok(p.title.length <= 44, `${p.slug} title length ${p.title.length}`);
+    assert.ok(p.description.length >= 90 && p.description.length <= 160, `${p.slug} description length ${p.description.length}`);
+    assert.ok(p.faq.length >= 3 && p.sections.length >= 3, p.slug);
+    assert.ok(!/[\u2014\u2013]/.test(JSON.stringify(p)), `${p.slug} has a dash character`);
+    const out = convert(p.example, optsFromConfig(p.config)).output;
+    assert.ok(out.length > 0, `${p.slug} example gives output`);
+  }
+});
+t('landing page examples give the expected output', () => {
+  const by = Object.fromEntries(pages.map((p) => [p.slug, convert(p.example, optsFromConfig(p.config)).output]));
+  assert.equal(by['sql-in-list-generator'], "('AB-100', 'AB-101', 'O''Brien', 'AB-104')");
+  assert.equal(by['list-to-column'], 'red\ngreen\nblue\ngreen\nSmith, John');
+  assert.equal(by['excel-column-to-comma-separated-list'], 'Smith,Jones,Lee');
+  assert.equal(by['remove-duplicates-from-list'], 'red,Blue,Green');
+  assert.equal(by['column-to-html-list'], '<ul>\n  <li>Free shipping</li>\n  <li>Easy returns</li>\n  <li>Secure checkout</li>\n</ul>');
+  assert.equal(by['json-array-from-column'], '["blue", 42, 3.5, "say \\"hi\\"", "C:\\\\temp"]');
 });
