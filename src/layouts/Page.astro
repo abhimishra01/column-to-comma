@@ -3,8 +3,8 @@
 import Base from './Base.astro';
 import site from '../site.config.ts';
 import { withoutBase } from '../lib/url.ts';
-interface Props { title: string; description?: string; }
-const { title, description } = Astro.props;
+interface Props { title: string; description?: string; noindex?: boolean; }
+const { title, description, noindex = false } = Astro.props;
 const base = `https://${site.domain}`;
 const jsonLd = [{
   '@context': 'https://schema.org',
@@ -15,7 +15,7 @@ const jsonLd = [{
   ],
 }];
 ---
-<Base title={title} description={description} jsonLd={jsonLd}>
+<Base title={title} description={description} noindex={noindex} jsonLd={jsonLd}>
   <div class="mx-auto max-w-5xl px-4 pt-12 sm:pt-16">
     <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
     <div class="prose-site mt-6"><slot /></div>
