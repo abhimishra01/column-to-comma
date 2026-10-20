@@ -9,7 +9,7 @@
       <li>Copy the cells. Select the column in your sheet and press Ctrl+C (Cmd+C on a Mac).</li>
       <li>Click the left box and paste. You can also tap <strong>Paste</strong>.</li>
       <li>Pick a separator and, if you need them, quotes.</li>
-      <li>Press <strong>Copy</strong>, or hit Ctrl+Enter, and paste the list where you need it.</li>
+      <li>Press <strong>Copy</strong>, or hit Ctrl+Enter (Cmd+Enter on a Mac), and paste the list where you need it.</li>
     </ol>
 
     <h2>Worked example: build a SQL IN list</h2>
@@ -30,30 +30,30 @@
         <tr><td>Plain list</td><td>Comma</td><td>None</td><td><code>a,b,c</code></td></tr>
         <tr><td>Readable list</td><td>Comma and space</td><td>None</td><td><code>a, b, c</code></td></tr>
         <tr><td>SQL IN list</td><td>Comma and space</td><td>Single, wrap in ( )</td><td><code>('a', 'b', 'c')</code></td></tr>
-        <tr><td>JSON array</td><td>Comma and space</td><td>Double, wrap in [ ]</td><td><code>["a", "b", "c"]</code></td></tr>
+        <tr><td>JSON array</td><td>Comma and space</td><td>Double (JSON), wrap in [ ]</td><td><code>["a", "b", "c"]</code></td></tr>
         <tr><td>CSV row</td><td>Comma</td><td>Double</td><td><code>"a","b","c"</code></td></tr>
         <tr><td>Pipe list</td><td>Pipe</td><td>None</td><td><code>a|b|c</code></td></tr>
       </tbody>
     </table>
 
     <h2>Column to comma in Excel and Google Sheets</h2>
-    <p>Both programs have a built in way to join cells. In Excel and Sheets, <code>=TEXTJOIN(",", TRUE, A1:A100)</code> joins the range with commas and skips empty cells. It works well for a fixed range, but it cannot add quotes, drop duplicates or sort without extra formulas. This tool does all of that in one step, and you do not need to change your file.</p>
+    <p>Both programs have a built-in way to join cells. In Excel and Sheets, <code>=TEXTJOIN(",", TRUE, A1:A100)</code> joins the range with commas and skips empty cells. It works well for a fixed range, but it cannot add quotes, drop duplicates or sort without extra formulas. This tool does all of that in one step, and you do not need to change your file.</p>
     <p>The tool also accepts text copied from a database client, a CSV file, an email or a web page. It handles Windows, Mac and Linux line breaks.</p>
 
     <h2>What each option does</h2>
     <ul>
       <li><strong>Trim spaces</strong> removes spaces and tabs around each value. Cells copied from a sheet often carry them.</li>
       <li><strong>Remove blank lines</strong> drops empty rows, so you never get <code>a,,b</code>.</li>
-      <li><strong>Remove duplicates</strong> keeps the first copy of each value. Tick <strong>Ignore case</strong> to treat Ab and ab as the same.</li>
+      <li><strong>Remove duplicates</strong> keeps the first copy of each value. Tick <strong>Ignore case for duplicates</strong> to treat Ab and ab as the same.</li>
       <li><strong>Sort</strong> orders values from A to Z or Z to A. Numbers inside text sort the natural way, so item2 comes before item10. The number options sort by value.</li>
       <li><strong>Do not quote numbers</strong> leaves 42 and 3.5 bare but quotes 007, so leading zeros survive.</li>
     </ul>
 
     <h2>Tips for clean results</h2>
-    <p>Copying from a sheet often brings along extra spaces and empty rows at the bottom. The default settings remove both, so you can paste first and think later. If your values contain commas themselves, such as "Smith, John", turn on double quotes so the next program reads each name as one value. If you work with text from a PDF or a web page, paste it as plain text first. Check the item count under the output. It tells you how many values went in and how many came out, which is a quick way to confirm that nothing was lost.</p>
+    <p>If your values contain commas, such as "Smith, John", turn on double quotes so the next program reads each name as one value. Check the count under the output. It shows how many lines went in and how many items came out, so you can see that nothing was lost.</p>
 
     <h2>Convert a list back to a column</h2>
-    <p>Switch to <strong>List to column</strong> to go the other way. Paste <code>'a', 'b', 'c'</code> and you get three rows. The tool removes the quotes and brackets, and it keeps a comma that sits inside a quoted value. Leave the separator on Auto-detect to split on commas, semicolons, pipes or tabs.</p>
+    <p>Switch to <strong>List to column</strong> to go the other way. Paste <code>'a', 'b', 'c'</code> and you get three rows. The tool removes the quotes and brackets, and it keeps a comma that sits inside a quoted value. Leave <strong>Split on</strong> at Auto-detect to split on commas, semicolons, pipes or tabs.</p>
 
     <h2>When a comma separated list helps</h2>
     <ul>
@@ -63,9 +63,9 @@
       <li><strong>Search and filters.</strong> Tools that filter by a list of SKUs or order numbers usually want one line.</li>
       <li><strong>Spreadsheet formulas.</strong> Paste a list of values into a function that expects them inline.</li>
     </ul>
-    <p>If a tool rejects your list, check three things: stray spaces, a trailing comma, and quotes of the wrong kind. Trim spaces and blank lines are on by default, which fixes the first two. The Quotes menu fixes the third.</p>
+    <p>If a tool rejects your list, check three things: stray spaces, a trailing comma, and quotes of the wrong kind. <strong>Trim spaces</strong> and <strong>Remove blank lines</strong> are on by default, which fixes the first two. The Quotes menu fixes the third.</p>
 
     <h2>Large lists and privacy</h2>
-    <p>The tool works on lists of 100,000 rows in well under a second. Everything runs in your browser. Your text is not uploaded or stored, so it is safe to use with customer IDs and internal data. Your option choices are remembered on your device only.</p>
+    <p>The tool works on lists of 100,000 rows in well under a second. Everything runs in your browser, and your text is never uploaded.</p>
   </article>
 </section>
