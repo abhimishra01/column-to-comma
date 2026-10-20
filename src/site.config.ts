@@ -11,7 +11,7 @@ export default {
   email: 'hello@columntocommalist.com', // contact email (shown on Contact and Privacy pages)
   ga4: '',                            // GA4 measurement ID, e.g. 'G-XXXXXXXXXX'. Empty = Google Analytics off
   adsense: '',                        // AdSense publisher ID, e.g. 'ca-pub-1234567890123456'. Empty = ads off
-  brand: '#0e7a4f',                   // brand color (hex)
+  brand: '#0f766e',                   // brand color (hex)
   locale: 'en-US',                    // BCP 47 language tag
   ogImage: '/og.png',                 // 1200x630 file in public/
   category: 'UtilitiesApplication',   // schema.org applicationCategory

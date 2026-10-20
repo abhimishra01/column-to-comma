@@ -1,12 +1,12 @@
 ---
 // The tool. Logic lives in src/lib/convert.js (tested by npm test). This file is markup plus event wiring.
-const chip = 'rounded-full border border-line bg-card px-3.5 min-h-10 text-sm font-medium text-ink hover:border-brand focus-visible:border-brand disabled:cursor-default disabled:opacity-45 disabled:hover:border-line';
-const smallBtn = 'inline-flex min-h-10 items-center rounded-lg border border-line bg-card px-3 text-sm font-medium text-ink hover:border-brand';
-const field = 'mt-1 block min-h-11 w-full rounded-lg border border-line bg-paper px-3 text-base text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 disabled:opacity-45';
+const chip = 'rounded-full border border-edge bg-card px-3.5 min-h-10 text-sm font-medium text-ink hover:border-brand focus-visible:border-brand disabled:cursor-default disabled:opacity-45 disabled:hover:border-edge';
+const smallBtn = 'inline-flex min-h-10 items-center rounded-lg border border-edge bg-card px-3 text-sm font-medium text-ink hover:border-brand';
+const field = 'mt-1 block min-h-11 w-full rounded-lg border border-edge bg-paper px-3 text-base text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 disabled:opacity-45';
 const check = 'flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-1 text-[0.95rem] has-[:disabled]:cursor-default has-[:disabled]:opacity-45';
 const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
 ---
-<section id="tool" aria-label="Column to comma converter" class="rounded-2xl border border-line bg-card p-3 sm:p-5">
+<section id="tool" aria-label="Column to comma converter" class="rounded-2xl border border-line bg-card shadow-[var(--card-shadow)] p-3 sm:p-5">
   <div class="flex flex-wrap items-center justify-between gap-3">
     <fieldset class="m-0 min-w-0 border-0 p-0">
       <legend class="sr-only">Direction</legend>
@@ -36,7 +36,7 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
       </div>
       <textarea id="in" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"
         placeholder={'One value per line, for example:\n1001\n1002\n1003'}
-        class="mt-2 block h-56 w-full resize-y rounded-xl border border-line bg-paper p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-64"></textarea>
+        class="mt-2 block h-56 w-full resize-y rounded-xl border border-edge bg-paper p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-64"></textarea>
     </div>
 
     <details id="opts" open class="order-3 lg:col-start-1 lg:row-start-2">
@@ -112,7 +112,7 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
         </button>
       </div>
       <textarea id="out" readonly spellcheck="false" wrap="soft" placeholder="Your list shows up here as you type."
-        class="mt-2 block h-56 w-full resize-y rounded-xl border border-line bg-brand-soft p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-auto lg:min-h-[22rem] lg:flex-1"></textarea>
+        class="mt-2 block h-56 w-full resize-y rounded-xl border border-edge bg-brand-soft p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-auto lg:min-h-[22rem] lg:flex-1"></textarea>
       <p id="stats" class="mt-2 min-h-6 whitespace-pre-line text-sm text-muted"></p>
       <p id="announce" role="status" class="sr-only"></p>
     </div>
