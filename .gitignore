@@ -5,3 +5,4 @@ dist-pages
 .wrangler
 .playwright-cli
 screenshots
+dist-bingemind/

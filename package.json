@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "node --test tests/*.test.mjs",
-    "deploy": "npm test && npm run build && node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/deploy.mjs"
+    "deploy": "npm test && npm run build && node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/deploy.mjs",
+    "build:bingemind": "npm test && SITE_MODE=bingemind astro build --outDir dist-bingemind && node -e \"require('fs').rmSync('dist-bingemind/robots.txt',{force:true})\""
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

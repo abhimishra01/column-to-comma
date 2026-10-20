@@ -15,7 +15,7 @@ const { page } = Astro.props;
 const result = convert(page.example, optsFromConfig(page.config)).output;
 const others = pages.filter((p) => p.slug !== page.slug);
 const base = `https://${site.domain}`;
-const url = new URL(withoutBase(Astro.url.pathname), base).href;
+const url = `${base}${withoutBase(Astro.url.pathname)}`;
 const jsonLd = [
   {
     '@context': 'https://schema.org',

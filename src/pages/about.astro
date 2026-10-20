@@ -10,5 +10,5 @@ import { withBase } from '../lib/url.ts';
   <h2>How it works</h2>
   <p>The conversion runs in your browser. Your text is not uploaded and we do not ask you to create an account. You can add quotes, remove duplicates, sort, trim spaces and choose the separator.</p>
   <h2>Contact</h2>
-  <p>Found a bug or want a feature? Write to <a href={`mailto:${site.email}`}>{site.email}</a> or visit the <a href={withBase('/contact/')}>Contact page</a>.</p>
+  <p>Found a bug or want a feature? Write to <a href={site.contactHref}>{site.contactLabel}</a> or visit the <a href={withBase('/contact/')}>Contact page</a>.</p>
 </Page>
