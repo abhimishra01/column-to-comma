@@ -1,6 +1,6 @@
 ---
 // The tool. Logic lives in src/lib/convert.js (tested by npm test). This file is markup plus event wiring.
-const chip = 'rounded-full border border-line bg-card px-3.5 min-h-10 text-sm font-medium text-ink hover:border-brand focus-visible:border-brand';
+const chip = 'rounded-full border border-line bg-card px-3.5 min-h-10 text-sm font-medium text-ink hover:border-brand focus-visible:border-brand disabled:cursor-default disabled:opacity-45 disabled:hover:border-line';
 const smallBtn = 'inline-flex min-h-10 items-center rounded-lg border border-line bg-card px-3 text-sm font-medium text-ink hover:border-brand';
 const field = 'mt-1 block min-h-11 w-full rounded-lg border border-line bg-paper px-3 text-base text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 disabled:opacity-45';
 const check = 'flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-1 text-[0.95rem] has-[:disabled]:cursor-default has-[:disabled]:opacity-45';
@@ -25,7 +25,7 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
   </div>
 
   <div class="mt-4 grid gap-4 lg:grid-cols-2 lg:grid-rows-[auto_1fr]">
-    <div class="lg:col-start-1 lg:row-start-1">
+    <div class="order-1 lg:col-start-1 lg:row-start-1">
       <div class="flex items-end justify-between gap-2">
         <label for="in" id="in-label" class="text-sm font-semibold">Your column</label>
         <div class="flex gap-2">
@@ -39,17 +39,18 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
         class="mt-2 block h-56 w-full resize-y rounded-xl border border-line bg-paper p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-64"></textarea>
     </div>
 
-    <div class="lg:col-start-1 lg:row-start-2">
+    <details id="opts" open class="order-3 lg:col-start-1 lg:row-start-2">
+      <summary class="flex min-h-11 cursor-pointer items-center text-sm font-semibold lg:hidden">Options</summary>
       <h2 class="sr-only">Options</h2>
       <div class="grid grid-cols-2 gap-x-3 gap-y-1">
         <div>
           <label for="delim" id="delim-label" class="text-sm font-semibold">Separator</label>
           <select id="delim" class={field}>
             <option value="auto" hidden>Auto-detect</option>
-            <option value="comma" selected>Comma  ,</option>
+            <option value="comma" selected>Comma ,</option>
             <option value="comma-space">Comma + space</option>
-            <option value="semicolon">Semicolon  ;</option>
-            <option value="pipe">Pipe  |</option>
+            <option value="semicolon">Semicolon ;</option>
+            <option value="pipe">Pipe |</option>
             <option value="newline">New line</option>
             <option value="tab">Tab</option>
             <option value="space">Space</option>
@@ -64,9 +65,10 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
           <label for="quote" class="text-sm font-semibold">Quotes</label>
           <select id="quote" class={field}>
             <option value="none">None</option>
-            <option value="single">Single  &#39;a&#39;</option>
-            <option value="double">Double  &quot;a&quot;</option>
-            <option value="backtick">Backtick  `a`</option>
+            <option value="single">Single &#39;a&#39;</option>
+            <option value="double">Double &quot;a&quot;</option>
+            <option value="backtick">Backtick `a`</option>
+            <option value="json">Double, JSON style &quot;a&quot;</option>
           </select>
         </div>
         <div>
@@ -96,12 +98,13 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
         <label class={check}><input type="checkbox" id="icase" class={box} />Ignore case for duplicates</label>
         <label class={check + ' sm:col-span-2'}><input type="checkbox" id="nums" class={box} />Do not quote numbers (good for SQL IN)</label>
       </div>
-    </div>
+      <button type="button" id="reset" class={smallBtn + ' mt-2'}>Reset options</button>
+    </details>
 
-    <div class="flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1">
+    <div class="order-2 flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1">
       <div class="flex items-end justify-between gap-2">
-        <label for="out" id="out-label" class="text-sm font-semibold">Comma separated list</label>
-        <button type="button" id="copy" disabled
+        <label for="out" id="out-label" class="text-sm font-semibold">Your list</label>
+        <button type="button" id="copy" disabled aria-keyshortcuts="Control+Enter Meta+Enter"
           class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand px-4 text-base font-semibold text-white hover:brightness-110 focus-visible:outline-offset-2 disabled:cursor-default disabled:opacity-45 disabled:hover:brightness-100">
           <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
           <span id="copy-label">Copy</span>
@@ -110,11 +113,16 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
       </div>
       <textarea id="out" readonly spellcheck="false" wrap="soft" placeholder="Your list shows up here as you type."
         class="mt-2 block h-56 w-full resize-y rounded-xl border border-line bg-brand-soft p-3 font-mono text-[0.9375rem] leading-6 text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 lg:h-auto lg:min-h-[22rem] lg:flex-1"></textarea>
-      <p id="stats" role="status" aria-live="polite" aria-atomic="true" class="mt-2 min-h-6 text-sm text-muted"></p>
+      <p id="stats" class="mt-2 min-h-6 whitespace-pre-line text-sm text-muted"></p>
+      <p id="announce" role="status" class="sr-only"></p>
     </div>
   </div>
 
 </section>
+<script is:inline>
+  // Runs before paint: on a phone the options start closed, so the result sits right under the input.
+  if (matchMedia('(max-width: 1023px)').matches) document.getElementById('opts').open = false;
+</script>
 
 <style>
   .seg { position: relative; display: inline-flex; cursor: pointer; }
@@ -122,11 +130,10 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
   .seg:hover span { color: var(--ink); }
   .seg input:checked + span { background: var(--brand); color: #fff; }
   .seg input:focus-visible + span { outline: 2px solid var(--brand-ink); outline-offset: 2px; }
-  button:focus-visible, select:focus-visible, input:focus-visible { outline-offset: 2px; }
 </style>
 
 <script>
-  import { convert, resolveDelimiter } from '../lib/convert.js';
+  import { convert, resolveDelimiter, PRESETS } from '../lib/convert.js';
 
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const input = $<HTMLTextAreaElement>('in');
@@ -144,38 +151,64 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
   const copyBtn = $<HTMLButtonElement>('copy');
   const copyLabel = $('copy-label');
   const stats = $('stats');
+  const announce = $('announce');
+  const opts = $<HTMLDetailsElement>('opts');
+  const presetBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-preset]'));
   const modes = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="mode"]'));
   const autoOpt = delim.querySelector<HTMLOptionElement>('option[value="auto"]')!;
 
+  const mac = /Mac|iPhone|iPad/.test((navigator as any).userAgentData?.platform ?? navigator.userAgent);
+  const touch = matchMedia('(pointer: coarse)').matches;
   const KEY = 'ctc-options-v1';
-  let lastForwardDelim = 'comma';
   const mode = () => (modes.find((m) => m.checked)?.value ?? 'toList') as 'toList' | 'toColumn';
 
-  const PRESETS: Record<string, Record<string, string | boolean>> = {
-    comma: { delim: 'comma', quote: 'none', wrap: 'none', nums: false },
-    sql: { delim: 'comma-space', quote: 'single', wrap: 'parens', nums: true },
-    json: { delim: 'comma-space', quote: 'double', wrap: 'brackets', nums: true },
-    csv: { delim: 'comma', quote: 'double', wrap: 'none', nums: false },
+  // Every saved control, with its default. save, restore and reset all loop over this one table.
+  const controls = { delim, custom, quote, wrap, sort, trim, blanks, dedupe, icase, nums };
+  const DEFAULTS: Record<keyof typeof controls, string | boolean> = {
+    delim: 'comma', custom: '', quote: 'none', wrap: 'none', sort: 'none',
+    trim: true, blanks: true, dedupe: false, icase: false, nums: false,
   };
+  const isBox = (el: HTMLElement): el is HTMLInputElement => el instanceof HTMLInputElement && el.type === 'checkbox';
+
+  // The separator belongs to the mode. Column to list remembers its choice; List to column starts on Auto.
+  // Only the Column to list choice is saved, on purpose: Auto is the right start for a pasted list.
+  const delimByMode = { toList: 'comma', toColumn: 'auto' };
+  let currentMode = mode();
+
+  // Safari ignores a hidden <option>, so Auto-detect is added to the menu only in List to column mode.
+  function showAuto(rev: boolean) {
+    if (rev && !autoOpt.isConnected) delim.prepend(autoOpt);
+    if (!rev) autoOpt.remove();
+  }
+
+  function applyValues(v: Partial<Record<keyof typeof controls, unknown>>) {
+    for (const [k, el] of Object.entries(controls)) {
+      const key = k as keyof typeof controls;
+      const val = v[key] ?? DEFAULTS[key];
+      if (isBox(el)) el.checked = !!val; else (el as HTMLInputElement | HTMLSelectElement).value = String(val);
+    }
+    if (!delim.value) delim.value = 'comma';
+  }
 
   function save() {
     try {
-      localStorage.setItem(KEY, JSON.stringify({
-        mode: mode(), delim: mode() === 'toList' ? delim.value : lastForwardDelim, custom: custom.value, quote: quote.value, wrap: wrap.value, sort: sort.value,
-        trim: trim.checked, blanks: blanks.checked, dedupe: dedupe.checked, icase: icase.checked, nums: nums.checked,
-      }));
+      const v: Record<string, unknown> = { mode: mode() };
+      for (const [k, el] of Object.entries(controls)) v[k] = isBox(el) ? el.checked : el.value;
+      v.delim = delimByMode.toList;
+      localStorage.setItem(KEY, JSON.stringify(v));
     } catch {}
   }
 
   function syncUi() {
     const rev = mode() === 'toColumn';
-    autoOpt.hidden = !rev;
+    showAuto(rev);
     $('delim-label').textContent = rev ? 'Split on' : 'Separator';
     $('in-label').textContent = rev ? 'Your list' : 'Your column';
-    $('out-label').textContent = rev ? 'Column' : 'Comma separated list';
+    $('out-label').textContent = rev ? 'Your column' : 'Your list';
     input.placeholder = rev ? "A list such as:\n'a', 'b', 'c'" : 'One value per line, for example:\n1001\n1002\n1003';
     out.placeholder = rev ? 'Your column shows up here as you type.' : 'Your list shows up here as you type.';
     quote.disabled = wrap.disabled = rev;
+    presetBtns.forEach((b) => (b.disabled = rev));
     nums.disabled = rev || quote.value === 'none';
     icase.disabled = !dedupe.checked;
     custom.disabled = delim.value !== 'custom';
@@ -187,7 +220,7 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
     const text = input.value;
     const d = resolveDelimiter(delim.value, custom.value);
     const r = convert(text, {
-      mode: mode(), delimiter: rev || d !== null ? d : ',', quote: quote.value, skipNumberQuotes: nums.checked,
+      mode: mode(), delimiter: rev ? d : (d ?? ','), quote: quote.value, skipNumberQuotes: nums.checked,
       trim: trim.checked, removeBlanks: blanks.checked, dedupe: dedupe.checked, ignoreCase: icase.checked,
       sort: sort.value, wrap: wrap.value,
     });
@@ -199,48 +232,66 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
     const parts = [`${plural(s.inputItems, rev ? 'item' : 'line')} in`, `${plural(s.outputItems, 'item')} out`];
     if (s.blanksRemoved) parts.push(`${plural(s.blanksRemoved, 'blank')} removed`);
     if (s.duplicatesRemoved) parts.push(`${plural(s.duplicatesRemoved, 'duplicate')} removed`);
-    stats.textContent = parts.join('  |  ');
+    const notes = [parts.join(' | ')];
+    if (delim.value === 'custom' && !custom.value) notes.push('Type your custom separator. A comma is used until then.');
+    if (s.multiColumn) notes.push('This looks like several columns. Paste one column at a time.');
+    if (s.delimiterInItems) notes.push(`${plural(s.delimiterInItems, 'value')} contain the separator. Add quotes, or pick another separator.`);
+    stats.textContent = notes.join('\n');
   }
   function schedule() {
     clearTimeout(timer);
-    if (input.value.length > 200000) timer = window.setTimeout(render, 120);
-    else render();
+    if (input.value.length > 200000) {
+      stats.textContent = 'Working...';
+      timer = window.setTimeout(render, 120);
+    } else render();
   }
   function changed() { syncUi(); save(); schedule(); }
 
+  let copyTimer = 0;
   async function copy() {
     if (copyBtn.disabled) return;
     const text = out.value;
     let ok = false;
     try { await navigator.clipboard.writeText(text); ok = true; } catch {}
     if (!ok) { out.focus(); out.select(); try { ok = document.execCommand('copy'); } catch {} }
-    copyLabel.textContent = ok ? 'Copied' : 'Press Ctrl+C';
-    stats.textContent = ok ? `Copied ${out.value.length.toLocaleString('en-US')} characters to the clipboard.` : 'Copy was blocked. The text is selected, press Ctrl+C.';
-    setTimeout(() => { copyLabel.textContent = 'Copy'; render(); }, 1600);
+    copyLabel.textContent = ok ? 'Copied' : `Press ${mac ? 'Cmd' : 'Ctrl'}+C`;
+    const msg = ok ? `Copied ${text.length.toLocaleString('en-US')} characters to the clipboard.` : `Copy was blocked. The text is selected, press ${mac ? 'Cmd' : 'Ctrl'}+C.`;
+    stats.textContent = msg;
+    announce.textContent = msg;
+    clearTimeout(copyTimer);
+    copyTimer = window.setTimeout(() => { copyLabel.textContent = 'Copy'; announce.textContent = ''; render(); }, 1600);
   }
 
   // events
   input.addEventListener('input', schedule);
   [delim, quote, wrap, sort, trim, blanks, dedupe, icase, nums].forEach((el) => el.addEventListener('change', () => {
     if (el === delim) {
+      delimByMode[mode()] = delim.value;
       if (delim.value === 'custom') { syncUi(); custom.focus(); }
-      if (mode() === 'toList') lastForwardDelim = delim.value;
     }
     changed();
   }));
   custom.addEventListener('input', () => { save(); schedule(); });
   modes.forEach((m) => m.addEventListener('change', () => {
-    if (mode() === 'toColumn') { lastForwardDelim = delim.value === 'auto' ? lastForwardDelim : delim.value; delim.value = 'auto'; }
-    else { delim.value = lastForwardDelim; }
+    delimByMode[currentMode] = delim.value;
+    currentMode = mode();
+    showAuto(currentMode === 'toColumn');
+    delim.value = delimByMode[currentMode];
     changed();
   }));
-  document.querySelectorAll<HTMLButtonElement>('[data-preset]').forEach((b) => b.addEventListener('click', () => {
-    const p = PRESETS[b.dataset.preset!];
+  presetBtns.forEach((b) => b.addEventListener('click', () => {
+    const p = PRESETS[b.dataset.preset as keyof typeof PRESETS];
+    delim.value = delimByMode.toList = p.delimiter;
+    quote.value = p.quote; wrap.value = p.wrap; nums.checked = p.skipNumberQuotes;
+    changed();
+  }));
+  $('reset').addEventListener('click', () => {
     modes[0].checked = true;
-    delim.value = String(p.delim); lastForwardDelim = delim.value;
-    quote.value = String(p.quote); wrap.value = String(p.wrap); nums.checked = Boolean(p.nums);
+    currentMode = 'toList';
+    delimByMode.toList = 'comma';
+    applyValues({});
     changed();
-  }));
+  });
   $('clear').addEventListener('click', () => { input.value = ''; input.focus(); schedule(); });
   $('example').addEventListener('click', () => {
     input.value = mode() === 'toColumn' ? "'1001', '1002', '1003', '1002', '1004'" : '1001\n1002\n1003\n1002\n\n1004\n  1005  ';
@@ -248,25 +299,30 @@ const box = 'h-5 w-5 shrink-0 accent-[var(--brand)]';
   });
   $('paste').addEventListener('click', async () => {
     try { input.value = await navigator.clipboard.readText(); schedule(); }
-    catch { input.focus(); stats.textContent = 'Your browser blocked the paste button. Press Ctrl+V in the box instead.'; }
+    catch {
+      input.focus();
+      stats.textContent = touch
+        ? 'Your browser blocked the Paste button. Press and hold in the box, then tap Paste.'
+        : `Your browser blocked the Paste button. Press ${mac ? 'Cmd' : 'Ctrl'}+V in the box instead.`;
+    }
   });
   copyBtn.addEventListener('click', copy);
   out.addEventListener('focus', () => out.select());
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); copy(); }
   });
-  if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) $('copy-kbd').textContent = '⌘+Enter';
+  if (mac) $('copy-kbd').textContent = '⌘+Enter';
+  // The options are always open on wide screens, where the summary is hidden.
+  matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) opts.open = true; });
 
   // restore saved options
   try {
     const s = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (s) {
-      if (s.mode === 'toColumn') modes[1].checked = true;
-      lastForwardDelim = s.delim && s.delim !== 'auto' ? s.delim : 'comma';
-      delim.value = mode() === 'toColumn' ? 'auto' : lastForwardDelim;
-      if (delim.value === '') delim.value = 'comma';
-      custom.value = s.custom ?? ''; quote.value = s.quote ?? 'none'; wrap.value = s.wrap ?? 'none'; sort.value = s.sort ?? 'none';
-      trim.checked = s.trim ?? true; blanks.checked = s.blanks ?? true; dedupe.checked = !!s.dedupe; icase.checked = !!s.icase; nums.checked = !!s.nums;
+      if (s.mode === 'toColumn') { modes[1].checked = true; currentMode = 'toColumn'; }
+      delimByMode.toList = s.delim && s.delim !== 'auto' ? s.delim : 'comma';
+      applyValues({ ...s, delim: delimByMode.toList });
+      if (currentMode === 'toColumn') { showAuto(true); delim.value = 'auto'; }
     }
   } catch {}
   syncUi();
