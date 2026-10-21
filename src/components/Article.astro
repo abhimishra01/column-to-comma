@@ -1,5 +1,6 @@
 ---
 // SEO article. Plain, useful text. Edit with care: the main phrase sits in the first paragraph and in one H2.
+import { withBase } from '../lib/url.ts';
 ---
 <section aria-labelledby="about-tool" class="mx-auto max-w-5xl px-4 pt-16">
   <article class="prose-site">
@@ -35,6 +36,9 @@
         <tr><td>Pipe list</td><td>Pipe</td><td>None</td><td><code>a|b|c</code></td></tr>
       </tbody>
     </table>
+
+    <h2>Convert a column to CSV</h2>
+    <p>A column to CSV conversion gives you one row of values with a comma between them. Use the Plain list or CSV row settings above. Pick Double quotes if a value can hold a comma. There is a separate page for <a href={withBase('/column-to-csv-online/')}>column to CSV online</a>.</p>
 
     <h2>Column to comma in Excel and Google Sheets</h2>
     <p>Both programs have a built-in way to join cells. In Excel and Sheets, <code>=TEXTJOIN(",", TRUE, A1:A100)</code> joins the range with commas and skips empty cells. It works well for a fixed range, but it cannot add quotes, drop duplicates or sort without extra formulas. This tool does all of that in one step, and you do not need to change your file.</p>

@@ -1,6 +1,7 @@
 // FAQ items. Rendered on the home page AND output as FAQPage JSON-LD.
 export const faq = [
   { q: 'How do I convert a column to a comma separated list?', a: 'Copy the column from Excel, Google Sheets or your database tool. Paste it into the left box on this page. The comma separated list appears on the right. Press Copy to put it on your clipboard.' },
+  { q: 'How do I convert a column to CSV online?', a: 'Paste the column into the left box. The CSV row appears on the right, with a comma between values. Pick Double quotes if a value can hold a comma. Press Copy, or press Download .txt and rename the file to .csv.' },
   { q: 'How do I make a list for a SQL IN clause?', a: 'Paste your column and click SQL IN list. The tool puts single quotes around text, leaves numbers bare, and wraps the list in parentheses. Tick Remove duplicates if the column repeats values. Oracle allows at most 1,000 items in one IN list.' },
   { q: 'Can I turn a comma separated list back into rows?', a: 'Yes. Choose List to column at the top of the tool. Paste the list and you get one value per line. Quotes and brackets are removed, and a quoted value that holds a comma stays whole.' },
   { q: 'How does it handle apostrophes such as O\'Brien?', a: 'With single quotes on, the tool doubles the apostrophe, so O\'Brien becomes \'O\'\'Brien\'. That is the standard way to escape a quote in SQL. The same rule applies to double quotes. The JSON array setting escapes a quote with a backslash instead, as JSON requires.' },

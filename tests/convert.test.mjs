@@ -196,7 +196,7 @@ t('optsFromConfig defaults give the plain comma list', () => {
 t('optsFromConfig list to column uses auto-detect', () => assert.equal(run("'a', 'b'", optsFromConfig({ mode: 'toColumn', delim: 'auto' })), 'a\nb'));
 
 t('landing pages: unique, complete, within SEO limits', () => {
-  assert.equal(pages.length, 10);
+  assert.equal(pages.length, 11);
   const slugs = new Set(pages.map((p) => p.slug));
   const h1s = new Set(pages.map((p) => p.h1));
   const titles = new Set(pages.map((p) => p.title));

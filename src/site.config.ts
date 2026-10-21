@@ -9,7 +9,7 @@ export default {
   keyword: 'column to comma separated list', // main keyword
   title: 'Column to Comma Separated List Converter (Free)', // home page <title>, under 60 characters
   description:
-    'Paste a column from Excel, Sheets or SQL and get a comma separated list at once. Add quotes, remove duplicates, sort. Free, private, no sign-up.', // under 155 characters
+    'Convert a column to a comma separated list or CSV row. Paste from Excel, Sheets or SQL. Add quotes, remove duplicates, sort. Free and private.', // under 155 characters
   email: 'hello@columntocommalist.com',
   // Bingemind build (SITE_MODE=bingemind): owner is Bingemind, contact goes to the Bingemind contact section (no invented email).
   bingemind,

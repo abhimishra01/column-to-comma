@@ -5,6 +5,26 @@
 
 export const pages = [
   {
+    slug: 'column-to-csv-online',
+    title: 'Column to CSV Online',
+    h1: 'Column to CSV online: turn a column into a CSV row',
+    description: 'Convert a column to CSV online. Paste rows from Excel or Sheets and get one comma separated CSV line. Optional quotes. Free and private.',
+    intro: 'Paste a column and get a single CSV row, with commas between the values. Add double quotes if a value holds a comma. Nothing leaves your browser.',
+    short: 'Column to CSV online',
+    config: { delim: 'comma' },
+    example: "Anna\nBen\nChen\nDiaz",
+    sections: [
+      { h: 'How to convert a column to CSV', p: ['Copy the column in Excel, Google Sheets or any text file. Paste it into the left box. The CSV row appears on the right as you type. Press Copy and paste it into your file, script or form.', 'A CSV row is a line of values with a comma between each one. This page turns the rows of your column into that one line.'] },
+      { h: 'When to use quotes', p: ['Pick Double in the Quotes menu if a value may contain a comma, such as "Smith, John". The quotes keep the value in one field when a program reads the CSV. Without quotes, that value would split in two.', 'Leave quotes off for plain words and numbers. The list is then shorter and easier to read.'] },
+      { h: 'Column to CSV file or one row', ul: ['For one row, paste the column and copy the result. This is the list format most import fields and code snippets expect.', 'For a file, press Download .txt and rename the file to end in .csv.', 'For a column back from a CSV row, choose List to column at the top of the tool.'] },
+    ],
+    faq: [
+      { q: 'How do I convert a column to CSV in Excel?', a: 'You can use =TEXTJOIN(",", TRUE, A1:A100) in a cell. Or paste the column here and copy the result. This page needs no formula and does not change your workbook.' },
+      { q: 'Does it make one row or several columns?', a: 'It makes one row with every value separated by a comma. To get several rows, paste each group of values separately.' },
+      { q: 'Can I use a semicolon instead of a comma?', a: 'Yes. Pick Semicolon in the Separator menu. Some European versions of Excel use a semicolon as the CSV separator.' },
+    ],
+  },
+  {
     slug: 'sql-in-list-generator',
     title: 'SQL IN List Generator',
     h1: 'SQL IN list generator: turn a column into an IN clause',
