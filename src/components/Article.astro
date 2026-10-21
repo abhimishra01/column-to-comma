@@ -38,7 +38,7 @@ import { withBase } from '../lib/url.ts';
     </table>
 
     <h2>Convert a column to CSV</h2>
-    <p>As a column to CSV converter, this tool gives you one row of values with a comma between them. Use the Plain list or CSV row settings above. Pick Double quotes if a value can hold a comma. To convert column to CSV in a file, press Download .txt and rename it. There is a separate page for <a href={withBase('/column-to-csv-online/')}>column to CSV online</a>.</p>
+    <p>This tool also works as a column to CSV converter. It gives you one row of values with a comma between them. Use the Plain list or CSV row settings above. Pick Double quotes if a value can hold a comma. To convert a column to a CSV file, press Download .txt and rename it to .csv. There is a separate page for <a href={withBase('/column-to-csv-online/')}>column to CSV online</a>.</p>
 
     <h2>Column to comma in Excel and Google Sheets</h2>
     <p>Both programs have a built-in way to join cells. In Excel and Sheets, <code>=TEXTJOIN(",", TRUE, A1:A100)</code> joins the range with commas and skips empty cells. It works well for a fixed range, but it cannot add quotes, drop duplicates or sort without extra formulas. This tool does all of that in one step, and you do not need to change your file.</p>
