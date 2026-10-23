@@ -22,5 +22,5 @@ export default {
   locale: 'en-US',                    // BCP 47 language tag
   ogImage: '/og.png',                 // 1200x630 file in public/
   category: 'UtilitiesApplication',   // schema.org applicationCategory
-  owner: bingemind ? 'Bingemind' : 'Column to Comma',           // name used in legal pages (person or business)
+  owner: bingemind ? 'Bingemind (Abhishek Mishra)' : 'Column to Comma',           // name used in legal pages (person or business)
 };
